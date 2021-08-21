@@ -1,11 +1,28 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: "auto-version"
+description: "Update package.json version"
+
 inputs:
-  milliseconds: # change this
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  major-prefixes:
+    description: "Commit message prefixes to trigger an update of the major version number"
+    required: false
+    default: "[MAJOR]"
+
+  minor-prefixes:
+    description: "Commit message prefixes to trigger an update of the minor version number"
+    required: false
+    default: "[MINOR]"
+
+  patch-prefixes:
+    description: "Commit message prefixes to trigger an update of the patch version number"
+    required: false
+    default: "[PATCH]"
+
+outputs:
+  old-version:
+    description: "Old version code"
+  new-version:
+    description: "New version code"
+
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: "node12"
+  main: "dist/index.js"

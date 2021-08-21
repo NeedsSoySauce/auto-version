@@ -1,19 +1,26 @@
-import * as core from '@actions/core'
-import {wait} from './wait'
+import { Inputs } from './types';
+import { getInput } from './input';
+import core from '@actions/core';
 
-async function run(): Promise<void> {
-  try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+const MAJOR_PREFIXES = 'major-prefixes';
+const MINOR_PREFIXES = 'minor-prefixes';
+const PATCH_PREFIXES = 'patch-prefixes';
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+const getInputs = (): Inputs => {
+  const majorPrefixes = getInput(MAJOR_PREFIXES, { type: 'array' });
+  const minorPrefixes = getInput(MINOR_PREFIXES, { type: 'array' });
+  const patchPrefixes = getInput(PATCH_PREFIXES, { type: 'array' });
 
-    core.setOutput('time', new Date().toTimeString())
-  } catch (error) {
-    core.setFailed(error.message)
-  }
-}
+  return {
+    majorPrefixes,
+    minorPrefixes,
+    patchPrefixes
+  };
+};
 
-run()
+const run = async (): Promise<void> => {
+  const inputs = getInputs();
+  core.info(JSON.stringify(inputs, null, 2));
+};
+
+run().catch(error => core.setFailed(error));
