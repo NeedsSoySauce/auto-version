@@ -1,10 +1,10 @@
-name: 'build-test'
+name: "build-test"
 on: # rebuild any PRs and main branch changes
   pull_request:
   push:
     branches:
       - main
-      - 'release/*'
+      - "release/*"
 
 jobs:
   build: # make sure build/ci work properly
@@ -19,8 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
+      - name: auto-version
+        id: auto-version
+        uses: ./
         with:
           major: |
             [MAJOR]
             BREAKING CHANGE:
+
+      - run: echo "${{join(steps.auto-version.outputs.*, '\n')}}"
