@@ -1,26 +1,34 @@
+import * as core from '@actions/core';
+import {
+  MAJOR_PREFIXES_INPUT,
+  MINOR_PREFIXES_INPUT,
+  PATCH_PREFIXES_INPUT,
+  OLD_VERSION_OUTPUT,
+  NEW_VERSION_OUTPUT
+} from './constants';
 import { Inputs } from './types';
-import { getInput } from './input';
-import core from '@actions/core';
-
-const MAJOR_PREFIXES = 'major-prefixes';
-const MINOR_PREFIXES = 'minor-prefixes';
-const PATCH_PREFIXES = 'patch-prefixes';
 
 const getInputs = (): Inputs => {
-  const majorPrefixes = getInput(MAJOR_PREFIXES, { type: 'array' });
-  const minorPrefixes = getInput(MINOR_PREFIXES, { type: 'array' });
-  const patchPrefixes = getInput(PATCH_PREFIXES, { type: 'array' });
+  const options: core.InputOptions = {
+    required: true
+  };
+
+  const major = core.getMultilineInput(MAJOR_PREFIXES_INPUT, options);
+  const minor = core.getMultilineInput(MINOR_PREFIXES_INPUT, options);
+  const patch = core.getMultilineInput(PATCH_PREFIXES_INPUT, options);
 
   return {
-    majorPrefixes,
-    minorPrefixes,
-    patchPrefixes
+    major,
+    minor,
+    patch
   };
 };
 
 const run = async (): Promise<void> => {
   const inputs = getInputs();
   core.info(JSON.stringify(inputs, null, 2));
+  core.setOutput(OLD_VERSION_OUTPUT, '0.1.0');
+  core.setOutput(NEW_VERSION_OUTPUT, '0.1.1');
 };
 
 run().catch(error => core.setFailed(error));

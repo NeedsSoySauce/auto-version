@@ -1,5 +1,5 @@
 export interface Inputs {
-  majorPrefixes: string[];
-  minorPrefixes: string[];
-  patchPrefixes: string[];
+  major: string[];
+  minor: string[];
+  patch: string[];
 }
