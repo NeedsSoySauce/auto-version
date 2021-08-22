@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import * as github from '@actions/github';
 import {
   MAJOR_PREFIXES_INPUT,
   MINOR_PREFIXES_INPUT,
@@ -27,6 +28,8 @@ const getInputs = (): Inputs => {
 const run = async (): Promise<void> => {
   const inputs = getInputs();
   core.info(JSON.stringify(inputs, null, 2));
+  core.info(JSON.stringify(github.context, null, 2));
+
   core.setOutput(OLD_VERSION_OUTPUT, '0.1.0');
   core.setOutput(NEW_VERSION_OUTPUT, '0.1.1');
 };
