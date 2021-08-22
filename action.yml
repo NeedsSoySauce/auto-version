@@ -2,17 +2,17 @@ name: "auto-version"
 description: "Update package.json version"
 
 inputs:
-  major-prefixes:
+  major:
     description: "Commit message prefixes to trigger an update of the major version number"
     required: false
     default: "[MAJOR]"
 
-  minor-prefixes:
+  minor:
     description: "Commit message prefixes to trigger an update of the minor version number"
     required: false
     default: "[MINOR]"
 
-  patch-prefixes:
+  patch:
     description: "Commit message prefixes to trigger an update of the patch version number"
     required: false
     default: "[PATCH]"
