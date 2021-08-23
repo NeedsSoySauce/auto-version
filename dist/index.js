@@ -108,12 +108,20 @@ class GitHubCommitProvider {
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
                 ref: github.context.ref
+            }, (response, done) => {
+                if (response.data.find(c => c.sha === before)) {
+                    done();
+                }
+                return response.data.map(c => ({
+                    sha: c.sha,
+                    message: c.commit.message
+                }));
             });
             const beforeIndex = data.findIndex(c => c.sha === before);
             const afterIndex = data.findIndex(c => c.sha === after);
             const commitMessages = data
-                // .slice(beforeIndex + 1, afterIndex + 1)
-                .map(c => c.commit.message);
+                .slice(afterIndex, beforeIndex)
+                .map(c => c.message);
             logging_1.logger.info(`${beforeIndex}, ${afterIndex}`);
             return commitMessages;
         });
