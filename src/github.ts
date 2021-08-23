@@ -14,37 +14,19 @@ export class GitHubCommitProvider implements CommitProvider {
     options: GetCommitsOptions
   ): Promise<string[]> {
     const octokit = github.getOctokit(options.token);
+    const { before, after } = github.context.payload;
 
-    logger.info('-------- START CONTEXT --------');
-    logger.info(JSON.stringify(github.context, null, 2));
-    logger.info('-------- END CONTEXT ----------');
-
-    // Webook payloads: https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads
-    const commit = await octokit.rest.repos.getCommit({
+    const data = await octokit.paginate(octokit.rest.repos.listCommits, {
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
       ref: github.context.ref
     });
 
-    logger.info('-------- START COMMIT --------');
-    logger.info(JSON.stringify(commit, null, 2));
-    logger.info('-------- END COMMIT ----------');
-
-    const commitMessages: string[] = [];
-
-    for await (const response of octokit.paginate.iterator(
-      octokit.rest.repos.listCommits,
-      {
-        owner: github.context.repo.owner,
-        repo: github.context.repo.repo,
-        ref: github.context.ref
-      }
-    )) {
-      for (const c of response.data) {
-        // TODO filter results and end pagination
-        commitMessages.push(c.commit.message);
-      }
-    }
+    const beforeIndex = data.findIndex(c => c.sha === before);
+    const afterIndex = data.findIndex(c => c.sha === after);
+    const commitMessages: string[] = data
+      .slice(beforeIndex + 1, afterIndex + 1)
+      .map(c => c.commit.message);
 
     return commitMessages;
   }
