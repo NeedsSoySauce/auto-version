@@ -30,27 +30,21 @@ export class GitHubCommitProvider implements CommitProvider {
     logger.info(JSON.stringify(commit, null, 2));
     logger.info('-------- END COMMIT ----------');
 
-    const commitData = commit.data.commit;
-    const since = commitData.author?.date || commitData.committer?.date;
+    const commitMessages: string[] = [];
 
-    if (!commit) {
-      throw new Error(
-        `No commit date found for commit ref '${github.context.ref}'`
-      );
+    for await (const response of octokit.paginate.iterator(
+      octokit.rest.repos.listCommits,
+      {
+        owner: github.context.repo.owner,
+        repo: github.context.repo.repo,
+        ref: github.context.ref
+      }
+    )) {
+      for (const c of response.data) {
+        // TODO filter results and end pagination
+        commitMessages.push(c.commit.message);
+      }
     }
-
-    const commits = await octokit.rest.repos.listCommits({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      sha: github.context.payload.after,
-      since
-    });
-
-    logger.info('-------- START COMMITS --------');
-    logger.info(JSON.stringify(commits, null, 2));
-    logger.info('-------- END COMMITS ----------');
-
-    const commitMessages = commits.data.map(c => c.commit.message);
 
     return commitMessages;
   }
