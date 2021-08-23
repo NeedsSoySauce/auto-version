@@ -1,6 +1,6 @@
 {
   "name": "auto-version",
-  "version": "0.1.29",
+  "version": "0.1.30",
   "private": true,
   "description": "TypeScript template action",
   "main": "lib/index.js",
