@@ -29,9 +29,9 @@ export class GitHubCommitProvider implements CommitProvider {
     const commits = await octokit.rest.repos.listCommits({
       owner: github.context.repo.owner,
       repo: github.context.repo.repo,
-      sha: github.context.payload.after,
-      since:
-        commit.data.commit.author?.date || commit.data.commit.committer?.date
+      sha: github.context.payload.after
+      // since:
+      //   commit.data.commit.author?.date || commit.data.commit.committer?.date
     });
 
     const commitMessages = commits.data.map(c => c.commit.message);

@@ -98,14 +98,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GitHubCommitProvider = void 0;
 const github = __importStar(__nccwpck_require__(5438));
+const logging_1 = __nccwpck_require__(41);
 class GitHubCommitProvider {
     getCommitMessages(options) {
         return __awaiter(this, void 0, void 0, function* () {
             const octokit = github.getOctokit(options.token);
+            // Webook payloads: https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads
+            const commit = yield octokit.rest.repos.getCommit({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                ref: github.context.ref
+            });
+            logging_1.logger.info('-------- START COMMIT --------');
+            logging_1.logger.info(JSON.stringify(commit, null, 2));
+            logging_1.logger.info('-------- END COMMIT ----------');
             const commits = yield octokit.rest.repos.listCommits({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
-                sha: github.context.payload.before
+                sha: github.context.payload.after,
+                // since:
+                //   commit.data.commit.author?.date || commit.data.commit.committer?.date
             });
             const commitMessages = commits.data.map(c => c.commit.message);
             return commitMessages;
