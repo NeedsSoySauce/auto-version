@@ -1,42 +1,45 @@
 {
-    "plugins": ["jest", "@typescript-eslint"],
-    "extends": [
-      "airbnb-base",
-      "airbnb-typescript/base",
-      "eslint:recommended",
-      "plugin:@typescript-eslint/eslint-recommended",
-      "plugin:@typescript-eslint/recommended",
-      "prettier"
+  "plugins": ["jest", "@typescript-eslint"],
+  "extends": [
+    "airbnb-base",
+    "airbnb-typescript/base",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 9,
+    "sourceType": "module",
+    "project": "./tsconfig.eslint.json"
+  },
+  "rules": {
+    "no-underscore-dangle": "off",
+    "multiline-comment-style": "off",
+    "no-trailing-spaces": "error",
+    "@typescript-eslint/lines-between-class-members": [
+      "error",
+      "always",
+      {
+        "exceptAfterSingleLine": true
+      }
     ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": 9,
-      "sourceType": "module",
-      "project": "./tsconfig.eslint.json"
-    },
-    "rules": {
-      "multiline-comment-style": "off",
-      "no-trailing-spaces": "error",
-      "@typescript-eslint/lines-between-class-members": [
-          "error",
-          "always",
-          {
-              "exceptAfterSingleLine": true
-          }
-      ],
-      "import/prefer-default-export": "off",
-      "no-restricted-syntax": [
-          "error",
-          {
-              "selector": "ExportDefaultDeclaration",
-              "message": "Do not use default exports. Importing modules must give a name to these values, which can lead to inconsistencies in naming across modules."
-          }
-      ],
-      "class-methods-use-this": "off"
-    },
-    "env": {
-      "node": true,
-      "es6": true,
-      "jest/globals": true
-    }
+    "import/prefer-default-export": "off",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "ExportDefaultDeclaration",
+        "message": "Do not use default exports. Importing modules must give a name to these values, which can lead to inconsistencies in naming across modules."
+      }
+    ],
+    "class-methods-use-this": "off",
+    "max-classes-per-file": "off",
+    "@typescript-eslint/explicit-member-accessibility": ["error"]
+  },
+  "env": {
+    "node": true,
+    "es6": true,
+    "jest/globals": true
   }
+}

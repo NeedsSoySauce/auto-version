@@ -26,5 +26,6 @@ jobs:
           major: |
             [MAJOR]
             BREAKING CHANGE:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - run: echo "${{join(steps.auto-version.outputs.*, '\n')}}"
