@@ -95,55 +95,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __asyncValues = (this && this.__asyncValues) || function (o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator], i;
-    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GitHubCommitProvider = void 0;
 const github = __importStar(__nccwpck_require__(5438));
-const logging_1 = __nccwpck_require__(41);
 class GitHubCommitProvider {
     getCommitMessages(options) {
-        var e_1, _a;
         return __awaiter(this, void 0, void 0, function* () {
             const octokit = github.getOctokit(options.token);
-            logging_1.logger.info('-------- START CONTEXT --------');
-            logging_1.logger.info(JSON.stringify(github.context, null, 2));
-            logging_1.logger.info('-------- END CONTEXT ----------');
-            // Webook payloads: https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads
-            const commit = yield octokit.rest.repos.getCommit({
+            const { before, after } = github.context.payload;
+            const data = yield octokit.paginate(octokit.rest.repos.listCommits, {
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
                 ref: github.context.ref
             });
-            logging_1.logger.info('-------- START COMMIT --------');
-            logging_1.logger.info(JSON.stringify(commit, null, 2));
-            logging_1.logger.info('-------- END COMMIT ----------');
-            const commitMessages = [];
-            try {
-                for (var _b = __asyncValues(octokit.paginate.iterator(octokit.rest.repos.listCommits, {
-                    owner: github.context.repo.owner,
-                    repo: github.context.repo.repo,
-                    ref: github.context.ref
-                })), _c; _c = yield _b.next(), !_c.done;) {
-                    const response = _c.value;
-                    for (const c of response.data) {
-                        // TODO filter results and end pagination
-                        commitMessages.push(c.commit.message);
-                    }
-                }
-            }
-            catch (e_1_1) { e_1 = { error: e_1_1 }; }
-            finally {
-                try {
-                    if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
-                }
-                finally { if (e_1) throw e_1.error; }
-            }
+            const beforeIndex = data.findIndex(c => c.sha === before);
+            const afterIndex = data.findIndex(c => c.sha === after);
+            const commitMessages = data
+                .slice(beforeIndex + 1, afterIndex + 1)
+                .map(c => c.commit.message);
             return commitMessages;
         });
     }
