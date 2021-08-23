@@ -98,6 +98,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GitHubCommitProvider = void 0;
 const github = __importStar(__nccwpck_require__(5438));
+const logging_1 = __nccwpck_require__(41);
 class GitHubCommitProvider {
     getCommitMessages(options) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -111,8 +112,9 @@ class GitHubCommitProvider {
             const beforeIndex = data.findIndex(c => c.sha === before);
             const afterIndex = data.findIndex(c => c.sha === after);
             const commitMessages = data
-                .slice(beforeIndex + 1, afterIndex + 1)
+                // .slice(beforeIndex + 1, afterIndex + 1)
                 .map(c => c.commit.message);
+            logging_1.logger.info(`${beforeIndex}, ${afterIndex}`);
             return commitMessages;
         });
     }

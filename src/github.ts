@@ -25,8 +25,10 @@ export class GitHubCommitProvider implements CommitProvider {
     const beforeIndex = data.findIndex(c => c.sha === before);
     const afterIndex = data.findIndex(c => c.sha === after);
     const commitMessages: string[] = data
-      .slice(beforeIndex + 1, afterIndex + 1)
+      // .slice(beforeIndex + 1, afterIndex + 1)
       .map(c => c.commit.message);
+
+    logger.info(`${beforeIndex}, ${afterIndex}`);
 
     return commitMessages;
   }
