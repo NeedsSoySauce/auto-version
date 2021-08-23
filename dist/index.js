@@ -101,8 +101,12 @@ const github = __importStar(__nccwpck_require__(5438));
 const logging_1 = __nccwpck_require__(41);
 class GitHubCommitProvider {
     getCommitMessages(options) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const octokit = github.getOctokit(options.token);
+            logging_1.logger.info('-------- START CONTEXT --------');
+            logging_1.logger.info(JSON.stringify(github.context, null, 2));
+            logging_1.logger.info('-------- END CONTEXT ----------');
             // Webook payloads: https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads
             const commit = yield octokit.rest.repos.getCommit({
                 owner: github.context.repo.owner,
@@ -112,13 +116,20 @@ class GitHubCommitProvider {
             logging_1.logger.info('-------- START COMMIT --------');
             logging_1.logger.info(JSON.stringify(commit, null, 2));
             logging_1.logger.info('-------- END COMMIT ----------');
+            const commitData = commit.data.commit;
+            const since = ((_a = commitData.author) === null || _a === void 0 ? void 0 : _a.date) || ((_b = commitData.committer) === null || _b === void 0 ? void 0 : _b.date);
+            if (!commit) {
+                throw new Error(`No commit date found for commit ref '${github.context.ref}'`);
+            }
             const commits = yield octokit.rest.repos.listCommits({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
                 sha: github.context.payload.after,
-                // since:
-                //   commit.data.commit.author?.date || commit.data.commit.committer?.date
+                since
             });
+            logging_1.logger.info('-------- START COMMITS --------');
+            logging_1.logger.info(JSON.stringify(commits, null, 2));
+            logging_1.logger.info('-------- END COMMITS ----------');
             const commitMessages = commits.data.map(c => c.commit.message);
             return commitMessages;
         });
