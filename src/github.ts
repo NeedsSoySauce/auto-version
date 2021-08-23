@@ -1,5 +1,4 @@
 import * as github from '@actions/github';
-import { logger } from './logging';
 
 export interface GetCommitsOptions {
   token: string;
@@ -39,8 +38,6 @@ export class GitHubCommitProvider implements CommitProvider {
     const commitMessages: string[] = data
       .slice(afterIndex, beforeIndex)
       .map(c => c.message);
-
-    logger.info(`${beforeIndex}, ${afterIndex}`);
 
     return commitMessages;
   }
