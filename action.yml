@@ -19,8 +19,7 @@ inputs:
 
   token:
     description: "Repo PAT or GITHUB_TOKEN"
-    required: false
-    default: ${{ secrets.GITHUB_TOKEN }}
+    required: true
 
 outputs:
   old-version:
