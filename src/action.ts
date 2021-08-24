@@ -1,5 +1,4 @@
 import { setFailed } from '@actions/core';
-import { getExecOutput } from '@actions/exec';
 import { ExecutionProvider } from './execution';
 import { GitHubCommitProvider } from './github';
 import { InputProvider, Inputs } from './input';
