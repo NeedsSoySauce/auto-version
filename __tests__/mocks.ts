@@ -8,7 +8,8 @@ export class MockInputProvider implements InputProvider {
       major: ['major'],
       minor: ['minor'],
       patch: ['patch'],
-      token: 'token'
+      token: 'token',
+      noPrefix: 'error'
     };
   }
 }

@@ -15,6 +15,7 @@ jobs:
           npm install
       - run: |
           npm run all
+
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
@@ -27,5 +28,21 @@ jobs:
             [MAJOR]
             BREAKING CHANGE:
           token: ${{ github.token }}
+
+      - run: echo "${{join(steps.auto-version.outputs.*, '\n')}}"
+
+  test-no-prefix: # make sure the action works on a clean machine without building
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: auto-version
+        id: auto-version
+        uses: ./
+        with:
+          major: |
+            [MAJOR]
+            BREAKING CHANGE:
+          token: ${{ github.token }}
+          no-prefix: "success"
 
       - run: echo "${{join(steps.auto-version.outputs.*, '\n')}}"
