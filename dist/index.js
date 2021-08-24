@@ -17,6 +17,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Action = void 0;
+const core_1 = __nccwpck_require__(2186);
 const exec_1 = __nccwpck_require__(1514);
 const logging_1 = __nccwpck_require__(41);
 class Action {
@@ -29,6 +30,19 @@ class Action {
     hasItemWithPrefix(items, prefixes) {
         return items.some(item => prefixes.some(prefix => item.startsWith(prefix)));
     }
+    getVersion(commitMessages, { major, minor, patch }) {
+        let version = null;
+        if (this.hasItemWithPrefix(commitMessages, major)) {
+            version = 'major';
+        }
+        else if (this.hasItemWithPrefix(commitMessages, minor)) {
+            version = 'minor';
+        }
+        else if (this.hasItemWithPrefix(commitMessages, patch)) {
+            version = 'patch';
+        }
+        return version;
+    }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
             const inputs = this.input.getInputs();
@@ -36,19 +50,14 @@ class Action {
             const commitMessages = yield this.git.getCommitMessages({
                 token: inputs.token
             });
-            this.logger.info(JSON.stringify(commitMessages, null, 2));
-            let version;
-            if (this.hasItemWithPrefix(commitMessages, inputs.major)) {
-                version = 'major';
-            }
-            else if (this.hasItemWithPrefix(commitMessages, inputs.minor)) {
-                version = 'minor';
-            }
-            else if (this.hasItemWithPrefix(commitMessages, inputs.patch)) {
-                version = 'patch';
-            }
-            else {
-                this.logger.info('No matching prefix was found, exiting.');
+            const version = this.getVersion(commitMessages, inputs);
+            if (version === null) {
+                if (inputs.noPrefix === 'error') {
+                    core_1.setFailed('No matching prefix was found.');
+                }
+                else {
+                    this.logger.info('Exiting because no matching prefix was found.');
+                }
                 return;
             }
             const result = yield exec_1.getExecOutput(`npm version`, [version]);
@@ -71,11 +80,12 @@ exports.Action = Action;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NEW_VERSION_OUTPUT = exports.OLD_VERSION_OUTPUT = exports.TOKEN_INPUT = exports.PATCH_INPUT = exports.MINOR_INPUT = exports.MAJOR_INPUT = void 0;
+exports.NEW_VERSION_OUTPUT = exports.OLD_VERSION_OUTPUT = exports.NO_PREFIX_INPUT = exports.TOKEN_INPUT = exports.PATCH_INPUT = exports.MINOR_INPUT = exports.MAJOR_INPUT = void 0;
 exports.MAJOR_INPUT = 'major';
 exports.MINOR_INPUT = 'minor';
 exports.PATCH_INPUT = 'patch';
 exports.TOKEN_INPUT = 'token';
+exports.NO_PREFIX_INPUT = 'no-prefix';
 exports.OLD_VERSION_OUTPUT = 'old-version';
 exports.NEW_VERSION_OUTPUT = 'new-version';
 
@@ -179,16 +189,28 @@ exports.ActionInputProvider = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const constants_1 = __nccwpck_require__(5105);
 class ActionInputProvider {
+    getNoPrefixMode() {
+        const mode = core.getInput(constants_1.NO_PREFIX_INPUT, { required: false }) || 'error';
+        switch (mode) {
+            case 'success':
+            case 'error':
+                return mode;
+            default:
+                throw new Error(`Invalid value for input '${constants_1.NO_PREFIX_INPUT}'. Valid values are 'success' and 'error'.`);
+        }
+    }
     getInputs() {
         const major = core.getMultilineInput(constants_1.MAJOR_INPUT, { required: true });
         const minor = core.getMultilineInput(constants_1.MINOR_INPUT, { required: true });
         const patch = core.getMultilineInput(constants_1.PATCH_INPUT, { required: true });
         const token = core.getInput(constants_1.TOKEN_INPUT, { required: true });
+        const noPrefix = this.getNoPrefixMode();
         return {
             major,
             minor,
             patch,
-            token
+            token,
+            noPrefix
         };
     }
 }
@@ -7863,11 +7885,12 @@ var __webpack_exports__ = {};
 var exports = __webpack_exports__;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const output_1 = __nccwpck_require__(138);
-const github_1 = __nccwpck_require__(5928);
-const logging_1 = __nccwpck_require__(41);
+const core_1 = __nccwpck_require__(2186);
 const action_1 = __nccwpck_require__(9139);
+const github_1 = __nccwpck_require__(5928);
 const input_1 = __nccwpck_require__(8657);
+const logging_1 = __nccwpck_require__(41);
+const output_1 = __nccwpck_require__(138);
 const logger = new logging_1.ActionLogger();
 const action = new action_1.Action({
     input: new input_1.ActionInputProvider(),
@@ -7875,7 +7898,10 @@ const action = new action_1.Action({
     git: new github_1.GitHubCommitProvider(),
     logger
 });
-action.run().catch(error => logger.error(error));
+action.run().catch(error => {
+    logger.error(error.message);
+    core_1.setFailed(error.message);
+});
 
 })();
 
