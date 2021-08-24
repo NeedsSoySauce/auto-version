@@ -17,8 +17,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Action = void 0;
-const core_1 = __nccwpck_require__(2186);
-const exec_1 = __nccwpck_require__(1514);
 const logging_1 = __nccwpck_require__(41);
 class Action {
     constructor(options) {
@@ -26,6 +24,7 @@ class Action {
         this.output = options.output;
         this.logger = options.logger || new logging_1.NullLogger();
         this.git = options.git;
+        this.exec = options.exec;
     }
     hasItemWithPrefix(items, prefixes) {
         return items.some(item => prefixes.some(prefix => item.startsWith(prefix)));
@@ -43,25 +42,31 @@ class Action {
         }
         return version;
     }
+    isValidMessage(inputs) {
+        return this.getVersion([inputs.message], inputs) === null;
+    }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
             const inputs = this.input.getInputs();
-            this.logger.info(JSON.stringify(inputs, null, 2));
+            if (!this.isValidMessage(inputs)) {
+                throw new Error(`The specified message '${inputs.message}' is invalid as it would match one of the specified prefixes.`);
+            }
             const commitMessages = yield this.git.getCommitMessages({
                 token: inputs.token
             });
             const version = this.getVersion(commitMessages, inputs);
             if (version === null) {
                 if (inputs.noPrefix === 'error') {
-                    core_1.setFailed('No matching prefix was found.');
+                    throw new Error('No matching prefix was found.');
                 }
                 else {
                     this.logger.info('Exiting because no matching prefix was found.');
                 }
                 return;
             }
-            const result = yield exec_1.getExecOutput(`npm version`, [version]);
-            this.logger.info(result.stdout);
+            const command = `npm version ${version} -m "${inputs.message}"`;
+            const result = yield this.exec.run(command);
+            this.logger.info(result);
             this.output.setOutputs({
                 oldVersion: '0.1.0',
                 newVersion: '0.1.1'
@@ -80,14 +85,45 @@ exports.Action = Action;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NEW_VERSION_OUTPUT = exports.OLD_VERSION_OUTPUT = exports.NO_PREFIX_INPUT = exports.TOKEN_INPUT = exports.PATCH_INPUT = exports.MINOR_INPUT = exports.MAJOR_INPUT = void 0;
+exports.NEW_VERSION_OUTPUT = exports.OLD_VERSION_OUTPUT = exports.NO_PREFIX_INPUT = exports.TOKEN_INPUT = exports.MESSAGE_INPUT = exports.PATCH_INPUT = exports.MINOR_INPUT = exports.MAJOR_INPUT = void 0;
 exports.MAJOR_INPUT = 'major';
 exports.MINOR_INPUT = 'minor';
 exports.PATCH_INPUT = 'patch';
+exports.MESSAGE_INPUT = 'message';
 exports.TOKEN_INPUT = 'token';
 exports.NO_PREFIX_INPUT = 'no-prefix';
 exports.OLD_VERSION_OUTPUT = 'old-version';
 exports.NEW_VERSION_OUTPUT = 'new-version';
+
+
+/***/ }),
+
+/***/ 7952:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ActionExecutionProvider = void 0;
+const exec_1 = __nccwpck_require__(1514);
+class ActionExecutionProvider {
+    run(command) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield exec_1.getExecOutput(command);
+            return result.stdout;
+        });
+    }
+}
+exports.ActionExecutionProvider = ActionExecutionProvider;
 
 
 /***/ }),
@@ -203,12 +239,14 @@ class ActionInputProvider {
         const major = core.getMultilineInput(constants_1.MAJOR_INPUT, { required: true });
         const minor = core.getMultilineInput(constants_1.MINOR_INPUT, { required: true });
         const patch = core.getMultilineInput(constants_1.PATCH_INPUT, { required: true });
+        const message = core.getInput(constants_1.MESSAGE_INPUT, { required: true });
         const token = core.getInput(constants_1.TOKEN_INPUT, { required: true });
         const noPrefix = this.getNoPrefixMode();
         return {
             major,
             minor,
             patch,
+            message,
             token,
             noPrefix
         };
@@ -7887,6 +7925,7 @@ var exports = __webpack_exports__;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(2186);
 const action_1 = __nccwpck_require__(9139);
+const execution_1 = __nccwpck_require__(7952);
 const github_1 = __nccwpck_require__(5928);
 const input_1 = __nccwpck_require__(8657);
 const logging_1 = __nccwpck_require__(41);
@@ -7896,10 +7935,10 @@ const action = new action_1.Action({
     input: new input_1.ActionInputProvider(),
     output: new output_1.ActionOutputProvider(),
     git: new github_1.GitHubCommitProvider(),
+    exec: new execution_1.ActionExecutionProvider(),
     logger
 });
 action.run().catch(error => {
-    logger.error(error.message);
     core_1.setFailed(error.message);
 });
 

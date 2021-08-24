@@ -7,7 +7,8 @@ on: # rebuild any PRs and main branch changes
       - "release/*"
 
 jobs:
-  build: # make sure build/ci work properly
+  # Make sure build/ci work properly
+  build: 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,33 +17,52 @@ jobs:
       - run: |
           npm run all
 
-  test: # make sure the action works on a clean machine without building
+  # Make sure the action works on a clean machine without building
+  test: 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - name: Configure git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
       - name: auto-version
         id: auto-version
         uses: ./
         with:
-          major: |
-            [MAJOR]
-            BREAKING CHANGE:
           token: ${{ github.token }}
+        continue-on-error: true
 
-      - run: echo "${{join(steps.auto-version.outputs.*, '\n')}}"
+      - if: steps.auto-version.outcome == 'failure'
+        run: echo "${{toJSON(steps.auto-version)}}"
 
-  test-no-prefix: # make sure the action works on a clean machine without building
+  test-no-prefix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - name: Configure git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
       - name: auto-version
         id: auto-version
         uses: ./
         with:
           major: |
-            [MAJOR]
-            BREAKING CHANGE:
+            BREAKING CHANGE
+          minor: |
+            feat
+          patch: |
+            fix
+            docs
+            chore
           token: ${{ github.token }}
           no-prefix: "success"
 
-      - run: echo "${{join(steps.auto-version.outputs.*, '\n')}}"
+      - run: git log --pretty=format:%s -n 1
+
+      - run: git push
