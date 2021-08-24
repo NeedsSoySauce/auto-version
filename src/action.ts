@@ -1,6 +1,7 @@
+import { setFailed } from '@actions/core';
 import { getExecOutput } from '@actions/exec';
 import { GitHubCommitProvider } from './github';
-import { InputProvider } from './input';
+import { InputProvider, Inputs } from './input';
 import { Logger, NullLogger } from './logging';
 import { OutputProvider } from './output';
 
@@ -30,6 +31,21 @@ export class Action {
     return items.some(item => prefixes.some(prefix => item.startsWith(prefix)));
   }
 
+  private getVersion(
+    commitMessages: string[],
+    { major, minor, patch }: Inputs
+  ): Version | null {
+    let version: Version | null = null;
+    if (this.hasItemWithPrefix(commitMessages, major)) {
+      version = 'major';
+    } else if (this.hasItemWithPrefix(commitMessages, minor)) {
+      version = 'minor';
+    } else if (this.hasItemWithPrefix(commitMessages, patch)) {
+      version = 'patch';
+    }
+    return version;
+  }
+
   public async run(): Promise<void> {
     const inputs = this.input.getInputs();
     this.logger.info(JSON.stringify(inputs, null, 2));
@@ -37,17 +53,15 @@ export class Action {
     const commitMessages = await this.git.getCommitMessages({
       token: inputs.token
     });
-    this.logger.info(JSON.stringify(commitMessages, null, 2));
 
-    let version: Version;
-    if (this.hasItemWithPrefix(commitMessages, inputs.major)) {
-      version = 'major';
-    } else if (this.hasItemWithPrefix(commitMessages, inputs.minor)) {
-      version = 'minor';
-    } else if (this.hasItemWithPrefix(commitMessages, inputs.patch)) {
-      version = 'patch';
-    } else {
-      this.logger.info('No matching prefix was found, exiting.');
+    const version = this.getVersion(commitMessages, inputs);
+
+    if (version === null) {
+      if (inputs.noPrefix === 'error') {
+        setFailed('No matching prefix was found.');
+      } else {
+        this.logger.info('Exiting because no matching prefix was found.');
+      }
       return;
     }
 
