@@ -1,5 +1,6 @@
 import { setFailed } from '@actions/core';
 import { getExecOutput } from '@actions/exec';
+import { ExecutionProvider } from './execution';
 import { GitHubCommitProvider } from './github';
 import { InputProvider, Inputs } from './input';
 import { Logger, NullLogger } from './logging';
@@ -9,6 +10,7 @@ export interface ActionOptions {
   input: InputProvider;
   output: OutputProvider;
   git: GitHubCommitProvider;
+  exec: ExecutionProvider;
   logger?: Logger;
 }
 
@@ -19,12 +21,14 @@ export class Action {
   private output: OutputProvider;
   private logger: Logger;
   private git: GitHubCommitProvider;
+  private exec: ExecutionProvider;
 
   public constructor(options: ActionOptions) {
     this.input = options.input;
     this.output = options.output;
     this.logger = options.logger || new NullLogger();
     this.git = options.git;
+    this.exec = options.exec;
   }
 
   private hasItemWithPrefix(items: string[], prefixes: string[]): boolean {
@@ -65,9 +69,9 @@ export class Action {
       return;
     }
 
-    const result = await getExecOutput(`npm version`, [version]);
+    const result = await this.exec.run(`npm version ${version}`);
 
-    this.logger.info(result.stdout);
+    this.logger.info(result);
 
     this.output.setOutputs({
       oldVersion: '0.1.0',

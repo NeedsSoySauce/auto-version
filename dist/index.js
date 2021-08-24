@@ -18,7 +18,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Action = void 0;
 const core_1 = __nccwpck_require__(2186);
-const exec_1 = __nccwpck_require__(1514);
 const logging_1 = __nccwpck_require__(41);
 class Action {
     constructor(options) {
@@ -26,6 +25,7 @@ class Action {
         this.output = options.output;
         this.logger = options.logger || new logging_1.NullLogger();
         this.git = options.git;
+        this.exec = options.exec;
     }
     hasItemWithPrefix(items, prefixes) {
         return items.some(item => prefixes.some(prefix => item.startsWith(prefix)));
@@ -60,8 +60,8 @@ class Action {
                 }
                 return;
             }
-            const result = yield exec_1.getExecOutput(`npm version`, [version]);
-            this.logger.info(result.stdout);
+            const result = yield this.exec.run(`npm version ${version}`);
+            this.logger.info(result);
             this.output.setOutputs({
                 oldVersion: '0.1.0',
                 newVersion: '0.1.1'
@@ -88,6 +88,36 @@ exports.TOKEN_INPUT = 'token';
 exports.NO_PREFIX_INPUT = 'no-prefix';
 exports.OLD_VERSION_OUTPUT = 'old-version';
 exports.NEW_VERSION_OUTPUT = 'new-version';
+
+
+/***/ }),
+
+/***/ 7952:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.ActionExecutionProvider = void 0;
+const exec_1 = __nccwpck_require__(1514);
+class ActionExecutionProvider {
+    run(command) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const result = yield exec_1.getExecOutput(command);
+            return result.stdout;
+        });
+    }
+}
+exports.ActionExecutionProvider = ActionExecutionProvider;
 
 
 /***/ }),
@@ -7887,6 +7917,7 @@ var exports = __webpack_exports__;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(2186);
 const action_1 = __nccwpck_require__(9139);
+const execution_1 = __nccwpck_require__(7952);
 const github_1 = __nccwpck_require__(5928);
 const input_1 = __nccwpck_require__(8657);
 const logging_1 = __nccwpck_require__(41);
@@ -7896,6 +7927,7 @@ const action = new action_1.Action({
     input: new input_1.ActionInputProvider(),
     output: new output_1.ActionOutputProvider(),
     git: new github_1.GitHubCommitProvider(),
+    exec: new execution_1.ActionExecutionProvider(),
     logger
 });
 action.run().catch(error => {

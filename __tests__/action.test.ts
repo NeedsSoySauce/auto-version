@@ -1,6 +1,7 @@
 import { describe, test } from '@jest/globals';
 import { Action } from '../src/action';
 import {
+  MockExecutionProvider,
   MockGitProvider,
   MockInputProvider,
   MockOutputProvider
@@ -13,6 +14,7 @@ describe('Action', () => {
     const action = new Action({
       input: new MockInputProvider(),
       git: new MockGitProvider(),
+      exec: new MockExecutionProvider(),
       output
     });
 
