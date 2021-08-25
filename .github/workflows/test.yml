@@ -20,15 +20,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - name: Configure git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
       - name: auto-version
         id: auto-version
         uses: ./
         with:
-          major: |
-            feat:
-            fix:
-            [MAJOR]
-            BREAKING CHANGE:
           token: ${{ github.token }}
         continue-on-error: true
 
@@ -50,10 +51,11 @@ jobs:
         uses: ./
         with:
           major: |
-            feat:
-            fix:
-            [MAJOR]
-            BREAKING CHANGE:
+            BREAKING CHANGE
+          minor: |
+            feat
+          patch: |
+            fix
           token: ${{ github.token }}
           no-prefix: "success"
 
