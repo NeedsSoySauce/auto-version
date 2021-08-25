@@ -7,7 +7,8 @@ on: # rebuild any PRs and main branch changes
       - "release/*"
 
 jobs:
-  build: # make sure build/ci work properly
+  # Make sure build/ci work properly
+  build: 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,7 +17,8 @@ jobs:
       - run: |
           npm run all
 
-  test: # make sure the action works on a clean machine without building
+  # Make sure the action works on a clean machine without building
+  test: 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,7 +38,7 @@ jobs:
       - if: steps.auto-version.outcome == 'failure'
         run: echo "${{toJSON(steps.auto-version)}}"
 
-  test-no-prefix: # make sure the action works on a clean machine without building
+  test-no-prefix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -56,6 +58,7 @@ jobs:
             feat
           patch: |
             fix
+            docs
           token: ${{ github.token }}
           no-prefix: "success"
 
