@@ -59,5 +59,6 @@ jobs:
           token: ${{ github.token }}
           no-prefix: "success"
 
-      - name: Check commits
-        run: git log --pretty=format:%s -n 1
+      - run: git log --pretty=format:%s -n 1
+
+      - run: git push
