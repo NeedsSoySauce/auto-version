@@ -48,6 +48,7 @@ class Action {
     run() {
         return __awaiter(this, void 0, void 0, function* () {
             const inputs = this.input.getInputs();
+            this.logger.info(JSON.stringify(inputs, null, 2));
             if (!this.isValidMessage(inputs)) {
                 throw new Error(`The specified message '${inputs.message}' is invalid as it would match one of the specified prefixes.`);
             }
