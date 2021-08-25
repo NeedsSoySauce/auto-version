@@ -22,9 +22,9 @@ inputs:
     required: true
 
   message:
-    description: "Template for commit messages. Use '%s' for the new version, e.g. 'Updated to version %s'."
+    description: "Template for commit messages. Use '%s' for the new version. Defaults to 'Update version to %s'."
     required: false
-    default: "Updated to version %s"
+    default: "Update version to %s"
 
   no-prefix:
     description: >
