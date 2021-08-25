@@ -7938,7 +7938,6 @@ const action = new action_1.Action({
     logger
 });
 action.run().catch(error => {
-    logger.error(error.message);
     core_1.setFailed(error.message);
 });
 
