@@ -21,6 +21,11 @@ inputs:
     description: "Repo PAT or GITHUB_TOKEN"
     required: true
 
+  message:
+    description: "Template for commit messages. Use '%s' for the new version, e.g. 'Updated to version %s'."
+    required: false
+    default: "Updated to version %s"
+
   no-prefix:
     description: >
       Defaults to 'error'. Specifies the exit code to use if no prefix is found in any of the commits that are pushed. 

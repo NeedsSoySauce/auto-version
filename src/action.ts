@@ -49,9 +49,18 @@ export class Action {
     return version;
   }
 
+  private isValidMessage(inputs: Inputs): boolean {
+    return this.getVersion([inputs.message], inputs) === null;
+  }
+
   public async run(): Promise<void> {
     const inputs = this.input.getInputs();
-    this.logger.info(JSON.stringify(inputs, null, 2));
+
+    if (!this.isValidMessage(inputs)) {
+      throw new Error(
+        `The specified message '${inputs.message}' is invalid as it would match one of the specified prefixes.`
+      );
+    }
 
     const commitMessages = await this.git.getCommitMessages({
       token: inputs.token
@@ -61,14 +70,16 @@ export class Action {
 
     if (version === null) {
       if (inputs.noPrefix === 'error') {
-        setFailed('No matching prefix was found.');
+        throw new Error('No matching prefix was found.');
       } else {
         this.logger.info('Exiting because no matching prefix was found.');
       }
       return;
     }
 
-    const result = await this.exec.run(`npm version ${version}`);
+    const result = await this.exec.run(
+      `npm version ${version} -m ${inputs.message}`
+    );
 
     this.logger.info(result);
 

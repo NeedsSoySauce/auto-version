@@ -9,6 +9,7 @@ export class MockInputProvider implements InputProvider {
       major: ['major'],
       minor: ['minor'],
       patch: ['patch'],
+      message: 'Update version to %s',
       token: 'token',
       noPrefix: 'error'
     };

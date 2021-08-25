@@ -17,7 +17,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Action = void 0;
-const core_1 = __nccwpck_require__(2186);
 const logging_1 = __nccwpck_require__(41);
 class Action {
     constructor(options) {
@@ -43,24 +42,29 @@ class Action {
         }
         return version;
     }
+    isValidMessage(inputs) {
+        return this.getVersion([inputs.message], inputs) === null;
+    }
     run() {
         return __awaiter(this, void 0, void 0, function* () {
             const inputs = this.input.getInputs();
-            this.logger.info(JSON.stringify(inputs, null, 2));
+            if (!this.isValidMessage(inputs)) {
+                throw new Error(`The specified message '${inputs.message}' is invalid as it would match one of the specified prefixes.`);
+            }
             const commitMessages = yield this.git.getCommitMessages({
                 token: inputs.token
             });
             const version = this.getVersion(commitMessages, inputs);
             if (version === null) {
                 if (inputs.noPrefix === 'error') {
-                    core_1.setFailed('No matching prefix was found.');
+                    throw new Error('No matching prefix was found.');
                 }
                 else {
                     this.logger.info('Exiting because no matching prefix was found.');
                 }
                 return;
             }
-            const result = yield this.exec.run(`npm version ${version}`);
+            const result = yield this.exec.run(`npm version ${version} -m ${inputs.message}`);
             this.logger.info(result);
             this.output.setOutputs({
                 oldVersion: '0.1.0',
@@ -80,10 +84,11 @@ exports.Action = Action;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NEW_VERSION_OUTPUT = exports.OLD_VERSION_OUTPUT = exports.NO_PREFIX_INPUT = exports.TOKEN_INPUT = exports.PATCH_INPUT = exports.MINOR_INPUT = exports.MAJOR_INPUT = void 0;
+exports.NEW_VERSION_OUTPUT = exports.OLD_VERSION_OUTPUT = exports.NO_PREFIX_INPUT = exports.TOKEN_INPUT = exports.MESSAGE_INPUT = exports.PATCH_INPUT = exports.MINOR_INPUT = exports.MAJOR_INPUT = void 0;
 exports.MAJOR_INPUT = 'major';
 exports.MINOR_INPUT = 'minor';
 exports.PATCH_INPUT = 'patch';
+exports.MESSAGE_INPUT = 'message';
 exports.TOKEN_INPUT = 'token';
 exports.NO_PREFIX_INPUT = 'no-prefix';
 exports.OLD_VERSION_OUTPUT = 'old-version';
@@ -233,12 +238,14 @@ class ActionInputProvider {
         const major = core.getMultilineInput(constants_1.MAJOR_INPUT, { required: true });
         const minor = core.getMultilineInput(constants_1.MINOR_INPUT, { required: true });
         const patch = core.getMultilineInput(constants_1.PATCH_INPUT, { required: true });
+        const message = core.getInput(constants_1.TOKEN_INPUT, { required: true });
         const token = core.getInput(constants_1.TOKEN_INPUT, { required: true });
         const noPrefix = this.getNoPrefixMode();
         return {
             major,
             minor,
             patch,
+            message,
             token,
             noPrefix
         };
