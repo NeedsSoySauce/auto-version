@@ -59,6 +59,7 @@ jobs:
           patch: |
             fix
             docs
+            chore
           token: ${{ github.token }}
           no-prefix: "success"
 
