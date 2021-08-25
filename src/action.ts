@@ -76,7 +76,7 @@ export class Action {
       return;
     }
 
-    const command = `npm version ${version} -m $INPUT_MESSAGE"`;
+    const command = `npm version ${version} -m \${{ env.INPUT_MESSAGE }}"`;
 
     this.logger.info(`Running: ${command}`);
 
