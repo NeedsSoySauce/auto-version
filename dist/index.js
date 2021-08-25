@@ -64,7 +64,7 @@ class Action {
                 }
                 return;
             }
-            const command = `npm version ${version} -m "${inputs.message}"`;
+            const command = `npm version ${version} -m $INPUT_MESSAGE"`;
             this.logger.info(`Running: ${command}`);
             const result = yield this.exec.run(command);
             this.logger.info(result);
