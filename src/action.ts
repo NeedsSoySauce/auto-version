@@ -76,7 +76,8 @@ export class Action {
       return;
     }
 
-    const command = `npm version ${version} -m \${{ env.INPUT_MESSAGE }}"`;
+    const test = inputs.message.replace('%s', 'DA VERSION');
+    const command = `npm version ${version} -m ${test}"`;
 
     this.logger.info(`Running: ${command}`);
 
