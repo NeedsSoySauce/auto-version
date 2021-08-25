@@ -30,7 +30,7 @@ jobs:
           token: ${{ github.token }}
         continue-on-error: true
 
-      - if: always()
+      - if: steps.auto-version.outcome == 'failure'
         run: echo "${{toJSON(steps.auto-version)}}"
 
   test-no-prefix: # make sure the action works on a clean machine without building
