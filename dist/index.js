@@ -64,7 +64,9 @@ class Action {
                 }
                 return;
             }
-            const result = yield this.exec.run(`npm version ${version} -m ${inputs.message}`);
+            const command = `npm version ${version} -m ${inputs.message}`;
+            this.logger.info(`Running: ${command}`);
+            const result = yield this.exec.run(command);
             this.logger.info(result);
             this.output.setOutputs({
                 oldVersion: '0.1.0',

@@ -1,4 +1,3 @@
-import { setFailed } from '@actions/core';
 import { ExecutionProvider } from './execution';
 import { GitHubCommitProvider } from './github';
 import { InputProvider, Inputs } from './input';
@@ -77,9 +76,11 @@ export class Action {
       return;
     }
 
-    const result = await this.exec.run(
-      `npm version ${version} -m ${inputs.message}`
-    );
+    const command = `npm version ${version} -m ${inputs.message}`;
+
+    this.logger.info(`Running: ${command}`);
+
+    const result = await this.exec.run(command);
 
     this.logger.info(result);
 
