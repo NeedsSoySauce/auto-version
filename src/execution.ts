@@ -7,9 +7,7 @@ export interface ExecutionProvider {
 
 export class ActionExecutionProvider implements ExecutionProvider {
   public async run(command: string): Promise<string> {
-    // const result = await getExecOutput(command);
-
-    const result = execSync(command).toString();
-    return result;
+    const result = await getExecOutput(command);
+    return result.stdout;
   }
 }

@@ -1,6 +1,7 @@
 import * as core from '@actions/core';
 import {
   MAJOR_INPUT,
+  MESSAGE_INPUT,
   MINOR_INPUT,
   NO_PREFIX_INPUT,
   PATCH_INPUT,
@@ -46,7 +47,7 @@ export class ActionInputProvider implements InputProvider {
     const major = core.getMultilineInput(MAJOR_INPUT, { required: true });
     const minor = core.getMultilineInput(MINOR_INPUT, { required: true });
     const patch = core.getMultilineInput(PATCH_INPUT, { required: true });
-    const message = core.getInput(TOKEN_INPUT, { required: true });
+    const message = core.getInput(MESSAGE_INPUT, { required: true });
     const token = core.getInput(TOKEN_INPUT, { required: true });
     const noPrefix = this.getNoPrefixMode();
 
