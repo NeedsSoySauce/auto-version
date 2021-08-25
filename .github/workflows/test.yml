@@ -25,6 +25,8 @@ jobs:
         uses: ./
         with:
           major: |
+            feat:
+            fix:
             [MAJOR]
             BREAKING CHANGE:
           token: ${{ github.token }}
@@ -48,6 +50,8 @@ jobs:
         uses: ./
         with:
           major: |
+            feat:
+            fix:
             [MAJOR]
             BREAKING CHANGE:
           token: ${{ github.token }}
