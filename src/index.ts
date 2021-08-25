@@ -17,6 +17,5 @@ const action = new Action({
 });
 
 action.run().catch(error => {
-  logger.error(error.message);
   setFailed(error.message);
 });
