@@ -81,7 +81,7 @@ export class Action {
     const newVersion = await this.exec.run(command);
 
     this.output.setOutputs({
-      newVersion
+      newVersion: newVersion.trim()
     });
   }
 }

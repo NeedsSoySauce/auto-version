@@ -67,7 +67,7 @@ class Action {
             const command = `npm version ${version} -m "${inputs.message}" --git-tag-version ${inputs.gitTagVersion}`;
             const newVersion = yield this.exec.run(command);
             this.output.setOutputs({
-                newVersion
+                newVersion: newVersion.trim()
             });
         });
     }
