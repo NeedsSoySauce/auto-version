@@ -52,6 +52,6 @@ jobs:
           token: ${{ github.token }}
           no-prefix: "success"
 
-      - run: git log --pretty=format:%s -n 1
+      - run: echo "${{toJSON(steps.auto-version.outputs)}}"
 
       - run: git push --follow-tags
