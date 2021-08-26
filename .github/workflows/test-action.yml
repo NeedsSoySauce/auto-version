@@ -1,22 +1,11 @@
-name: "build-test"
-on: # rebuild any PRs and main branch changes
-  pull_request:
+name: "test-action"
+on:
   push:
     branches:
       - main
       - "release/*"
 
 jobs:
-  # Make sure build/ci work properly
-  build: 
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: |
-          npm install
-      - run: |
-          npm run all
-
   # Make sure the action works on a clean machine without building
   test: 
     runs-on: ubuntu-latest
