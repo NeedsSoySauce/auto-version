@@ -4,6 +4,7 @@ export const PATCH_INPUT = 'patch';
 export const MESSAGE_INPUT = 'message';
 export const TOKEN_INPUT = 'token';
 export const NO_PREFIX_INPUT = 'no-prefix';
+export const GIT_TAG_VERSION_INPUT = 'git-tag-version';
 
 export const OLD_VERSION_OUTPUT = 'old-version';
 export const NEW_VERSION_OUTPUT = 'new-version';

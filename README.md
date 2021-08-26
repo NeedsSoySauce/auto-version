@@ -4,14 +4,18 @@ Automatically run `npm version` when one or more commits are pushed.
 
 ## Inputs
 
-| Name      | Required | Description                                                                                                                                                                                      |
-|-----------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| token     | Yes      | Repo PAT or GITHUB_TOKEN                                                                                                                                                                         |
-| major     | No       | Commit message prefixes to trigger an update of the major version number                                                                                                                         |
-| minor     | No       | Commit message prefixes to trigger an update of the minor version number                                                                                                                         |
-| patch     | No       | Commit message prefixes to trigger an update of the patch version number                                                                                                                         |
-| message   | No       | Template for commit messages. Use '%s' for the new version. Defaults to 'Update version to %s'.                                                                                                  |
-| no-prefix | No       | Defaults to 'error'. Specifies the exit code to use if no prefix is found in any of the commits that are pushed. Valid values are 'success' and 'error' for an exit code of 0 or 1 respectively. |
+### Required:
+
+* `token`: Repo PAT or GITHUB_TOKEN
+
+### Optional
+
+* `major`: Commit message prefixes to trigger an update of the major version
+* `minor`: Commit message prefixes to trigger an update of the minor version
+* `patch`: Commit message prefixes to trigger an update of the patch version
+* `message`: Template for commit messages. Use '%s' for the new version. Defaults to 'Update version to %s'.
+* `no-prefix`: Defaults to 'error'. Specifies the exit code to use if no prefix is found in any of the commits that are pushed. Valid values are 'success' and 'error' for an exit code of 0 or 1 respectively.
+* `git-tag-version`: Defaults to 'true'. Specifies whether to tag the generated commit. Valid values are 'true' or 'false'.
 
 ## Outputs
 
@@ -52,6 +56,7 @@ jobs:
           token: ${{ github.token }}
           message: "Update version to %s"
           no-prefix: "success"
+          git-tag-version: 'true'
 
-      - run: git push
+      - run: git push --follow-tags
 ```

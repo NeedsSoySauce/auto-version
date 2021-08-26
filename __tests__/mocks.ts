@@ -11,7 +11,8 @@ export class MockInputProvider implements InputProvider {
       patch: ['patch'],
       message: 'Update version to %s',
       token: 'token',
-      noPrefix: 'error'
+      noPrefix: 'error',
+      gitTagVersion: true
     };
   }
 }

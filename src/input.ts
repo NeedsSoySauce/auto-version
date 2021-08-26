@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import {
+  GIT_TAG_VERSION_INPUT,
   MAJOR_INPUT,
   MESSAGE_INPUT,
   MINOR_INPUT,
@@ -17,6 +18,7 @@ export interface Inputs {
   token: string;
   message: string;
   noPrefix: NoPrefixMode;
+  gitTagVersion: boolean;
 }
 
 export interface InputOptions {
@@ -44,12 +46,14 @@ export class ActionInputProvider implements InputProvider {
   }
 
   public getInputs(): Inputs {
-    const major = core.getMultilineInput(MAJOR_INPUT, { required: true });
-    const minor = core.getMultilineInput(MINOR_INPUT, { required: true });
-    const patch = core.getMultilineInput(PATCH_INPUT, { required: true });
-    const message = core.getInput(MESSAGE_INPUT, { required: true });
-    const token = core.getInput(TOKEN_INPUT, { required: true });
+    const options = { required: true };
+    const major = core.getMultilineInput(MAJOR_INPUT, options);
+    const minor = core.getMultilineInput(MINOR_INPUT, options);
+    const patch = core.getMultilineInput(PATCH_INPUT, options);
+    const message = core.getInput(MESSAGE_INPUT, options);
+    const token = core.getInput(TOKEN_INPUT, options);
     const noPrefix = this.getNoPrefixMode();
+    const gitTagVersion = core.getBooleanInput(GIT_TAG_VERSION_INPUT, options);
 
     return {
       major,
@@ -57,7 +61,8 @@ export class ActionInputProvider implements InputProvider {
       patch,
       message,
       token,
-      noPrefix
+      noPrefix,
+      gitTagVersion
     };
   }
 }

@@ -33,6 +33,11 @@ inputs:
     required: false
     default: "error"
 
+  git-tag-version:
+    description:  Defaults to 'true'. Specifies whether to tag the generated commit. Valid values are 'true' or 'false'.
+    required: false
+    default: "true"
+
 outputs:
   old-version:
     description: "Old version code"

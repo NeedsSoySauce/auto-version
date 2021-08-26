@@ -64,12 +64,11 @@ class Action {
                 }
                 return;
             }
-            const command = `npm version ${version} -m "${inputs.message}" --git-tag-version`;
-            const result = yield this.exec.run(command);
-            this.logger.info(result);
+            const command = `npm version ${version} -m "${inputs.message}" --git-tag-version ${inputs.gitTagVersion}`;
+            const newVersion = yield this.exec.run(command);
             this.output.setOutputs({
                 oldVersion: '0.1.0',
-                newVersion: '0.1.1'
+                newVersion
             });
         });
     }
@@ -85,13 +84,14 @@ exports.Action = Action;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NEW_VERSION_OUTPUT = exports.OLD_VERSION_OUTPUT = exports.NO_PREFIX_INPUT = exports.TOKEN_INPUT = exports.MESSAGE_INPUT = exports.PATCH_INPUT = exports.MINOR_INPUT = exports.MAJOR_INPUT = void 0;
+exports.NEW_VERSION_OUTPUT = exports.OLD_VERSION_OUTPUT = exports.GIT_TAG_VERSION_INPUT = exports.NO_PREFIX_INPUT = exports.TOKEN_INPUT = exports.MESSAGE_INPUT = exports.PATCH_INPUT = exports.MINOR_INPUT = exports.MAJOR_INPUT = void 0;
 exports.MAJOR_INPUT = 'major';
 exports.MINOR_INPUT = 'minor';
 exports.PATCH_INPUT = 'patch';
 exports.MESSAGE_INPUT = 'message';
 exports.TOKEN_INPUT = 'token';
 exports.NO_PREFIX_INPUT = 'no-prefix';
+exports.GIT_TAG_VERSION_INPUT = 'git-tag-version';
 exports.OLD_VERSION_OUTPUT = 'old-version';
 exports.NEW_VERSION_OUTPUT = 'new-version';
 
@@ -236,19 +236,22 @@ class ActionInputProvider {
         }
     }
     getInputs() {
-        const major = core.getMultilineInput(constants_1.MAJOR_INPUT, { required: true });
-        const minor = core.getMultilineInput(constants_1.MINOR_INPUT, { required: true });
-        const patch = core.getMultilineInput(constants_1.PATCH_INPUT, { required: true });
-        const message = core.getInput(constants_1.MESSAGE_INPUT, { required: true });
-        const token = core.getInput(constants_1.TOKEN_INPUT, { required: true });
+        const options = { required: true };
+        const major = core.getMultilineInput(constants_1.MAJOR_INPUT, options);
+        const minor = core.getMultilineInput(constants_1.MINOR_INPUT, options);
+        const patch = core.getMultilineInput(constants_1.PATCH_INPUT, options);
+        const message = core.getInput(constants_1.MESSAGE_INPUT, options);
+        const token = core.getInput(constants_1.TOKEN_INPUT, options);
         const noPrefix = this.getNoPrefixMode();
+        const gitTagVersion = core.getBooleanInput(constants_1.GIT_TAG_VERSION_INPUT, options);
         return {
             major,
             minor,
             patch,
             message,
             token,
-            noPrefix
+            noPrefix,
+            gitTagVersion
         };
     }
 }

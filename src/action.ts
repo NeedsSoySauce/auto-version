@@ -76,15 +76,13 @@ export class Action {
       return;
     }
 
-    const command = `npm version ${version} -m "${inputs.message}" --git-tag-version`;
+    const command = `npm version ${version} -m "${inputs.message}" --git-tag-version ${inputs.gitTagVersion}`;
 
-    const result = await this.exec.run(command);
-
-    this.logger.info(result);
+    const newVersion = await this.exec.run(command);
 
     this.output.setOutputs({
       oldVersion: '0.1.0',
-      newVersion: '0.1.1'
+      newVersion
     });
   }
 }

@@ -1,4 +1,3 @@
-import { execSync } from 'child_process';
 import { getExecOutput } from '@actions/exec';
 
 export interface ExecutionProvider {
