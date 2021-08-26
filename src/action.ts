@@ -76,7 +76,7 @@ export class Action {
       return;
     }
 
-    const command = `npm version ${version} -m "${inputs.message}"`;
+    const command = `npm version ${version} -m "${inputs.message}" --git-tag-version`;
 
     const result = await this.exec.run(command);
 
