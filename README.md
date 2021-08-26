@@ -19,7 +19,7 @@ Automatically run `npm version` when one or more commits are pushed.
 
 ## Outputs
 
-TBD
+* `new-version`: New version code
 
 ## Example usage
 

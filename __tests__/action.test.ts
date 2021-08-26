@@ -1,5 +1,6 @@
 import { describe, test } from '@jest/globals';
 import { Action } from '../src/action';
+import { ActionExecutionProvider } from '../src/execution';
 import { MockOutputProvider } from './mocks';
 import { getMockActionOptions } from './utils';
 
@@ -12,7 +13,6 @@ describe('Action', () => {
     const action = new Action(options);
     await action.run();
 
-    expect(output.outputs?.oldVersion).toStrictEqual('0.1.0');
     expect(output.outputs?.newVersion).toStrictEqual('0.1.1');
   });
 
@@ -23,6 +23,7 @@ describe('Action', () => {
       getInputs: () => ({ ...inputs, message: inputs.major[0] })
     };
     options.input = inputProvider;
+    options.exec = new ActionExecutionProvider();
 
     const action = new Action(options);
 

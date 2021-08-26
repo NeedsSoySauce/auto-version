@@ -81,7 +81,6 @@ export class Action {
     const newVersion = await this.exec.run(command);
 
     this.output.setOutputs({
-      oldVersion: '0.1.0',
       newVersion
     });
   }

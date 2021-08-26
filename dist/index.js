@@ -67,7 +67,6 @@ class Action {
             const command = `npm version ${version} -m "${inputs.message}" --git-tag-version ${inputs.gitTagVersion}`;
             const newVersion = yield this.exec.run(command);
             this.output.setOutputs({
-                oldVersion: '0.1.0',
                 newVersion
             });
         });
@@ -84,7 +83,7 @@ exports.Action = Action;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.NEW_VERSION_OUTPUT = exports.OLD_VERSION_OUTPUT = exports.GIT_TAG_VERSION_INPUT = exports.NO_PREFIX_INPUT = exports.TOKEN_INPUT = exports.MESSAGE_INPUT = exports.PATCH_INPUT = exports.MINOR_INPUT = exports.MAJOR_INPUT = void 0;
+exports.NEW_VERSION_OUTPUT = exports.GIT_TAG_VERSION_INPUT = exports.NO_PREFIX_INPUT = exports.TOKEN_INPUT = exports.MESSAGE_INPUT = exports.PATCH_INPUT = exports.MINOR_INPUT = exports.MAJOR_INPUT = void 0;
 exports.MAJOR_INPUT = 'major';
 exports.MINOR_INPUT = 'minor';
 exports.PATCH_INPUT = 'patch';
@@ -92,7 +91,6 @@ exports.MESSAGE_INPUT = 'message';
 exports.TOKEN_INPUT = 'token';
 exports.NO_PREFIX_INPUT = 'no-prefix';
 exports.GIT_TAG_VERSION_INPUT = 'git-tag-version';
-exports.OLD_VERSION_OUTPUT = 'old-version';
 exports.NEW_VERSION_OUTPUT = 'new-version';
 
 
@@ -340,7 +338,6 @@ const core = __importStar(__nccwpck_require__(2186));
 const constants_1 = __nccwpck_require__(5105);
 class ActionOutputProvider {
     setOutputs(outputs) {
-        core.setOutput(constants_1.OLD_VERSION_OUTPUT, outputs.oldVersion);
         core.setOutput(constants_1.NEW_VERSION_OUTPUT, outputs.newVersion);
     }
 }

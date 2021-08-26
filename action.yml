@@ -39,8 +39,6 @@ inputs:
     default: "true"
 
 outputs:
-  old-version:
-    description: "Old version code"
   new-version:
     description: "New version code"
 
