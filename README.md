@@ -39,8 +39,8 @@ jobs:
 
       - name: Configure git
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
       - name: auto-version
         id: auto-version
@@ -54,6 +54,7 @@ jobs:
             fix
             docs
             chore
+          seperator: ""
           token: ${{ github.token }}
           message: "Update version to %s"
           no-prefix: "success"
