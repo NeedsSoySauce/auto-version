@@ -17,6 +17,11 @@ inputs:
     required: false
     default: "[PATCH]"
 
+  seperator:
+    description: "Defaults to an empty string. Seperator between a commit message's prefix and content."
+    required: false
+    default: ""
+
   token:
     description: "Repo PAT or GITHUB_TOKEN"
     required: true
@@ -34,7 +39,7 @@ inputs:
     default: "error"
 
   git-tag-version:
-    description:  Defaults to 'true'. Specifies whether to tag the generated commit. Valid values are 'true' or 'false'.
+    description: Defaults to 'true'. Specifies whether to tag the generated commit. Valid values are 'true' or 'false'.
     required: false
     default: "true"
 

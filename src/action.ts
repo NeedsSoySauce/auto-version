@@ -35,14 +35,17 @@ export class Action {
 
   private getVersion(
     commitMessages: string[],
-    { major, minor, patch }: Inputs
+    { major, minor, patch, seperator }: Inputs
   ): Version | null {
+    // TODO: refactor
     let version: Version | null = null;
-    if (this.hasItemWithPrefix(commitMessages, major)) {
+    const merge = (prefixes: string[]) =>
+      prefixes.map(prefix => `${prefix}${seperator}`);
+    if (this.hasItemWithPrefix(commitMessages, merge(major))) {
       version = 'major';
-    } else if (this.hasItemWithPrefix(commitMessages, minor)) {
+    } else if (this.hasItemWithPrefix(commitMessages, merge(minor))) {
       version = 'minor';
-    } else if (this.hasItemWithPrefix(commitMessages, patch)) {
+    } else if (this.hasItemWithPrefix(commitMessages, merge(patch))) {
       version = 'patch';
     }
     return version;

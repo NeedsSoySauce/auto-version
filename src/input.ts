@@ -6,6 +6,7 @@ import {
   MINOR_INPUT,
   NO_PREFIX_INPUT,
   PATCH_INPUT,
+  SEPERATOR_INPUT,
   TOKEN_INPUT
 } from './constants';
 
@@ -15,6 +16,7 @@ export interface Inputs {
   major: string[];
   minor: string[];
   patch: string[];
+  seperator: string;
   token: string;
   message: string;
   noPrefix: NoPrefixMode;
@@ -50,6 +52,7 @@ export class ActionInputProvider implements InputProvider {
     const major = core.getMultilineInput(MAJOR_INPUT, options);
     const minor = core.getMultilineInput(MINOR_INPUT, options);
     const patch = core.getMultilineInput(PATCH_INPUT, options);
+    const seperator = core.getInput(SEPERATOR_INPUT, options);
     const message = core.getInput(MESSAGE_INPUT, options);
     const token = core.getInput(TOKEN_INPUT, options);
     const noPrefix = this.getNoPrefixMode();
@@ -59,6 +62,7 @@ export class ActionInputProvider implements InputProvider {
       major,
       minor,
       patch,
+      seperator,
       message,
       token,
       noPrefix,
